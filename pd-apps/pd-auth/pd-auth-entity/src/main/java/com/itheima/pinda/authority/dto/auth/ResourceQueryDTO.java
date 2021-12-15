@@ -30,4 +30,5 @@ public class ResourceQueryDTO {
     @ApiModelProperty(value = "指定用户id", notes = "指定用户id，前端不传则自动获取")
     private Long userId;
 
+
 }
