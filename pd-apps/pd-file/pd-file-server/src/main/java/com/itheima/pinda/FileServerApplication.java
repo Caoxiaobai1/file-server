@@ -39,7 +39,7 @@ public class FileServerApplication {
                 env.getProperty("spring.application.name"),
                 InetAddress.getLocalHost().getHostAddress(),
                 env.getProperty("server.port"),
-                "102.168.0.118",
+                "192.168.0.118",
                 env.getProperty("server.port"));
 
     }
