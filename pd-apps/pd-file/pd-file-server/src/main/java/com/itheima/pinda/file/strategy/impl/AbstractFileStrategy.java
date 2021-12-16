@@ -82,7 +82,7 @@ public abstract class AbstractFileStrategy implements FileStrategy {
      * @param file
      * @return
      */
-    public abstract File uploadFile(File file, MultipartFile multipartFile);
+    public abstract File uploadFile(File file, MultipartFile multipartFile) throws Exception;
 
     @Override
     public Boolean delete(List<FileDeleteDO> list) {
