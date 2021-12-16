@@ -4,13 +4,15 @@ import com.itheima.pinda.exception.BizException;
 import com.itheima.pinda.exception.code.ExceptionCode;
 import com.itheima.pinda.file.domain.FileDeleteDO;
 import com.itheima.pinda.file.entity.File;
-import com.itheima.pinda.file.enumeration.DataType;
 import com.itheima.pinda.file.enumeration.IconType;
+import com.itheima.pinda.file.properties.FileServerProperties;
 import com.itheima.pinda.file.strategy.FileStrategy;
 import com.itheima.pinda.file.utils.FileDataTypeUtil;
 import com.itheima.pinda.utils.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
@@ -26,6 +28,13 @@ import java.util.List;
 public abstract class AbstractFileStrategy implements FileStrategy {
 
     private static final String FILE_SPLIT = ".";
+
+    @Autowired
+    protected FileServerProperties fileServerProperties;
+    /**
+     * 子类中具体确定
+     */
+    protected FileServerProperties.Properties properties;
 
     @Override
     public File upload(MultipartFile multipartFile) {
@@ -77,6 +86,39 @@ public abstract class AbstractFileStrategy implements FileStrategy {
 
     @Override
     public Boolean delete(List<FileDeleteDO> list) {
-        return null;
+        if (list == null || list.isEmpty()) {
+            return true;
+        }
+        // 删除操作是否成功标识
+        boolean flag = false;
+        for (FileDeleteDO fileDeleteDO : list) {
+            try {
+                delete(fileDeleteDO);
+                flag = true;
+            } catch (Exception e) {
+                log.error("e = {}", e.getMessage());
+            }
+        }
+        return flag;
     }
+
+    /**
+     * 文件删除抽象方法,需要当前类子类实现
+     *
+     * @param fileDeleteDO
+     */
+    public abstract void delete(FileDeleteDO fileDeleteDO);
+
+
+    /**
+     * 获取下载地址前缀
+     */
+    protected String getUriPredix() {
+        if (StringUtils.isNotEmpty(properties.getUriPrefix())) {
+            return properties.getUriPrefix();
+        } else {
+            return properties.getEndpoint();
+        }
+    }
+
 }
