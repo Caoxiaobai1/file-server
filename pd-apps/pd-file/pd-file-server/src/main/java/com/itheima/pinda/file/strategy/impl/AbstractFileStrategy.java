@@ -80,9 +80,8 @@ public abstract class AbstractFileStrategy implements FileStrategy {
      * 文件上传抽象方法,需要有当前类的子类实现
      *
      * @param file
-     * @return
      */
-    public abstract File uploadFile(File file, MultipartFile multipartFile) throws Exception;
+    public abstract void uploadFile(File file, MultipartFile multipartFile) throws Exception;
 
     @Override
     public Boolean delete(List<FileDeleteDO> list) {

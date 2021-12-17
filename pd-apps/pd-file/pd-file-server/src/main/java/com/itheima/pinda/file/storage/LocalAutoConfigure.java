@@ -1,6 +1,5 @@
 package com.itheima.pinda.file.storage;
 
-import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.UUID;
 import com.itheima.pinda.file.domain.FileDeleteDO;
 import com.itheima.pinda.file.entity.File;
@@ -10,6 +9,7 @@ import com.itheima.pinda.utils.DateUtils;
 import com.itheima.pinda.utils.StrPool;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -46,14 +46,12 @@ public class LocalAutoConfigure {
          *
          * @param file
          * @param multipartFile
-         * @return
          */
         @Override
-        public File uploadFile(File file, MultipartFile multipartFile) throws Exception {
+        public void uploadFile(File file, MultipartFile multipartFile) throws Exception {
             buildClient();
             String endpoint = properties.getEndpoint();
             String bucketName = properties.getBucketName();
-            String uriPrefix = properties.getUriPrefix();
 
             // 使用UUID替换文件上传名
             String fileName = UUID.randomUUID() + StrPool.DOT + file.getExt();
@@ -68,10 +66,14 @@ public class LocalAutoConfigure {
             FileUtils.writeByteArrayToFile(outFile, multipartFile.getBytes());
 
             // 文件上传完成后设置file属性入库
-            file.setUrl();
-            file.setFilename()
+            String url = getUriPredix() + StrPool.SLASH + bucketName + StrPool.SLASH + relativePath + StrPool.SLASH + fileName;
+            StringUtils.replace(url,"\\\\",StrPool.SLASH);
+            StringUtils.replace(url,"\\",StrPool.SLASH);
+            file.setUrl(url);
+            file.setFilename(fileName);
+            file.setRelativePath(relativePath);
 
-            return null;
+
         }
 
         /**
@@ -81,7 +83,15 @@ public class LocalAutoConfigure {
          */
         @Override
         public void delete(FileDeleteDO fileDeleteDO) {
-
+            String endpoint = properties.getEndpoint();
+            String bucketName = properties.getBucketName();
+            String relativePath = fileDeleteDO.getRelativePath();
+            String fileName = fileDeleteDO.getFileName();
+            // 删除文件绝对路径
+            String absolutePath = Paths.get(endpoint, bucketName, relativePath, fileName).toString();
+            // 删除文件
+            java.io.File file = new java.io.File(absolutePath);
+            FileUtils.deleteQuietly(file);
         }
     }
 }
