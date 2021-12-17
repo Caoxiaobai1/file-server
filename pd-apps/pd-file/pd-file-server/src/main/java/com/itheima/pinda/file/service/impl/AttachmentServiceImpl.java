@@ -1,8 +1,5 @@
 package com.itheima.pinda.file.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.itheima.pinda.base.id.IdGenerate;
 import com.itheima.pinda.database.mybatis.conditions.Wraps;
@@ -12,11 +9,9 @@ import com.itheima.pinda.file.dao.AttachmentMapper;
 import com.itheima.pinda.file.dto.AttachmentDTO;
 import com.itheima.pinda.file.entity.Attachment;
 import com.itheima.pinda.file.entity.File;
-import com.itheima.pinda.file.properties.FileServerProperties;
 import com.itheima.pinda.file.service.AttachmentService;
 import com.itheima.pinda.file.strategy.FileStrategy;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,6 +19,7 @@ import javax.annotation.Resource;
 
 /**
  * 附件业务实现类
+ *
  * @author caoyifei
  * @create 2021/12/17 17:54
  */
@@ -45,28 +41,28 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
         Attachment attachment = dozerUtils.map(uploadFile, Attachment.class);
 
         // 判断bizId是否为空,如果为空需要产生一个业务ID
-        if (bizId == null){
+        if (bizId == null) {
             Long bizIdLong = idGenerate.generate();
             attachment.setBizId(String.valueOf(bizIdLong));
-        }else {
+        } else {
             attachment.setBizId(String.valueOf(bizId));
         }
         attachment.setBizType(bizType);
 
         // 判断当前业务下其他的文件信息从数据库删除
-        if (isSingle != null && isSingle){
+        if (isSingle != null && isSingle) {
             // 需要将当前业务下其他的文件信息从数据库中删除
-            LbqWrapper<Attachment> eq = Wraps.<Attachment>lbQ().eq(Attachment::getBizId, attachment.getBizId()).eq(Attachment::getBizType,bizType);
+            LbqWrapper<Attachment> eq = Wraps.<Attachment>lbQ().eq(Attachment::getBizId, attachment.getBizId()).eq(Attachment::getBizType, bizType);
             super.remove(eq);
         }
-        if (id != null){
+        if (id != null) {
             attachment.setId(id);
             super.updateById(attachment);
-        }else {
+        } else {
             attachment.setId(idGenerate.generate());
             super.save(attachment);
         }
 
-        return dozerUtils.map(attachment,AttachmentDTO.class);
+        return dozerUtils.map(attachment, AttachmentDTO.class);
     }
 }
