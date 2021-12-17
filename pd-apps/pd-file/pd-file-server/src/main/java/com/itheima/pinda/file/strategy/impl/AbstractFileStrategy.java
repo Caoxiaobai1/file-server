@@ -41,7 +41,7 @@ public abstract class AbstractFileStrategy implements FileStrategy {
         try {
             // 获取上传文件的原始名
             String originalFilename = multipartFile.getOriginalFilename();
-            if (originalFilename != null && originalFilename.contains(FILE_SPLIT)) {
+            if (originalFilename != null && !originalFilename.contains(FILE_SPLIT)) {
                 // 如果文件名不包括".",为非法文件名
                 throw BizException.wrap(ExceptionCode.BASE_VALID_PARAM.build("上传文件格式错误"));
             }

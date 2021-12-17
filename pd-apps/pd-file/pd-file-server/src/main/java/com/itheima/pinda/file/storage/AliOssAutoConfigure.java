@@ -41,7 +41,7 @@ public class AliOssAutoConfigure {
      * 阿里云OSS文件策略处理类
      */
     @Service
-    public static class AliServiceImpl extends AbstractFileStrategy {
+    public class AliServiceImpl extends AbstractFileStrategy {
         /**
          * 构建阿里云OSS客户端
          *

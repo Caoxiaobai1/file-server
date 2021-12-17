@@ -29,7 +29,7 @@ public class FastDfsAutoConfigure {
      * FastDFS文件策略处理类
      */
     @Service
-    public static class FastDfsServiceImpl extends AbstractFileStrategy {
+    public class FastDfsServiceImpl extends AbstractFileStrategy {
 
         @Autowired
         private FastFileStorageClient storageClient; //操作FastDFS的客户端

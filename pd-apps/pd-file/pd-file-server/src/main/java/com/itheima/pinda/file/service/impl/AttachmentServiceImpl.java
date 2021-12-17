@@ -16,6 +16,7 @@ import com.itheima.pinda.file.properties.FileServerProperties;
 import com.itheima.pinda.file.service.AttachmentService;
 import com.itheima.pinda.file.strategy.FileStrategy;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -53,7 +54,7 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
         attachment.setBizType(bizType);
 
         // 判断当前业务下其他的文件信息从数据库删除
-        if (isSingle){
+        if (isSingle != null && isSingle){
             // 需要将当前业务下其他的文件信息从数据库中删除
             LbqWrapper<Attachment> eq = Wraps.<Attachment>lbQ().eq(Attachment::getBizId, attachment.getBizId()).eq(Attachment::getBizType,bizType);
             super.remove(eq);

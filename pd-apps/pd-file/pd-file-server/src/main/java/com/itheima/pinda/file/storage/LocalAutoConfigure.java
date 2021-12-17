@@ -35,7 +35,7 @@ public class LocalAutoConfigure {
      * 本地文件策略处理类
      */
     @Service
-    public static class LocalServiceImpl extends AbstractFileStrategy {
+    public class LocalServiceImpl extends AbstractFileStrategy {
 
         private void buildClient() {
             properties = fileServerProperties.getLocal();
