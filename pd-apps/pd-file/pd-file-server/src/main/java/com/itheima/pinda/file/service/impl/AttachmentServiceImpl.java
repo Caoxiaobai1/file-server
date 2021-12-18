@@ -1,11 +1,13 @@
 package com.itheima.pinda.file.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.itheima.pinda.base.id.IdGenerate;
 import com.itheima.pinda.database.mybatis.conditions.Wraps;
 import com.itheima.pinda.database.mybatis.conditions.query.LbqWrapper;
 import com.itheima.pinda.dozer.DozerUtils;
 import com.itheima.pinda.file.dao.AttachmentMapper;
+import com.itheima.pinda.file.domain.FileDeleteDO;
 import com.itheima.pinda.file.dto.AttachmentDTO;
 import com.itheima.pinda.file.entity.Attachment;
 import com.itheima.pinda.file.entity.File;
@@ -16,6 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 附件业务实现类
@@ -64,5 +69,23 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
         }
 
         return dozerUtils.map(attachment, AttachmentDTO.class);
+    }
+
+    @Override
+    public void remove(List<Long> ids) {
+        // 查询数据库,用于删除文件信息
+        List<Attachment> attachments = super.list(Wrappers.<Attachment>lambdaQuery().in(Attachment::getId, ids));
+
+        // 数据库删除文件记录
+        super.removeByIds(ids);
+        // 删除文件
+        List<FileDeleteDO> fileDeleteDOList =
+                attachments.stream().map(fi ->
+                        FileDeleteDO.builder().relativePath(fi.getRelativePath())
+                                .fileName(fi.getFilename())
+                                .group(fi.getGroup())
+                                .path(fi.getPath())
+                                .build()).collect(Collectors.toList());
+        fileStrategy.delete(fileDeleteDOList);
     }
 }
